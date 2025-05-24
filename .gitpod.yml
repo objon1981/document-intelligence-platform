@@ -2,34 +2,43 @@ image:
   file: .gitpod.Dockerfile
 
 ports:
-  - port: 80
-    onOpen: open-browser
-    description: Main Platform Dashboard
-  - port: 3001
+  - name: Main Dashboard
+    port: 80
+    onOpen: open-preview
+    visibility: public
+  - name: AnythingLLM
+    port: 3001
     onOpen: ignore
-    description: AnythingLLM
-  - port: 8080
+    visibility: public
+  - name: Kestra Workflows  
+    port: 8080
     onOpen: ignore
-    description: Kestra Workflows
-  - port: 11434
+    visibility: public
+  - name: Ollama API
+    port: 11434
     onOpen: ignore
-    description: Ollama API
-  - port: 5000
+    visibility: private
+  - name: DocETL Service
+    port: 5000
     onOpen: ignore
-    description: DocETL Service
+    visibility: public
 
 tasks:
   - name: Setup Platform
+    before: |
+      echo "Preparing workspace..."
+      mkdir -p {documents,organized,shared,processed,configs,workflows,static,jsoncrack}
     init: |
       echo "Setting up Document Intelligence Platform..."
-      chmod +x setup.sh
-      ./setup.sh
+      # Make scripts executable
+      chmod +x setup.sh start.sh 2>/dev/null || echo "Scripts not found yet"
     command: |
-      echo "Starting services..."
-      ./start.sh
+      echo "🚀 Workspace ready!"
+      echo "Run './start.sh' to launch the platform"
+      echo "Or run individual commands step by step"
 
 vscode:
   extensions:
     - ms-vscode.vscode-json
     - ms-python.python
-    - ms-vscode.vscode-yaml
+    - redhat.vscode-yaml
