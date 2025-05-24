@@ -1,20 +1,27 @@
 FROM gitpod/workspace-full:latest
 
-# Install Docker Compose
-RUN sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && \
-    sudo chmod +x /usr/local/bin/docker-compose
+USER root
 
-# Install additional tools
-RUN sudo apt-get update && \
-    sudo apt-get install -y \
+# Install Docker Compose (newer version)
+RUN curl -SL https://github.com/docker/compose/releases/download/v2.24.1/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose && \
+    chmod +x /usr/local/bin/docker-compose && \
+    ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     poppler-utils \
     tesseract-ocr \
-    nginx \
-    && sudo apt-get clean
+    tesseract-ocr-eng \
+    libtesseract-dev \
+    python3-dev \
+    python3-pip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Pre-pull some Docker images to speed up startup
-RUN docker pull ollama/ollama:latest || true
-RUN docker pull mintplexlabs/anythingllm:latest || true
-RUN docker pull nginx:alpine || true
-RUN docker pull postgres:15-alpine || true
-RUN docker pull redis:7-alpine || true
+# Switch back to gitpod user
+USER gitpod
+
+# Verify installations
+RUN docker-compose --version
+RUN tesseract --version
