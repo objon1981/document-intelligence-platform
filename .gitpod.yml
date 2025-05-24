@@ -1,0 +1,35 @@
+image:
+  file: .gitpod.Dockerfile
+
+ports:
+  - port: 80
+    onOpen: open-browser
+    description: Main Platform Dashboard
+  - port: 3001
+    onOpen: ignore
+    description: AnythingLLM
+  - port: 8080
+    onOpen: ignore
+    description: Kestra Workflows
+  - port: 11434
+    onOpen: ignore
+    description: Ollama API
+  - port: 5000
+    onOpen: ignore
+    description: DocETL Service
+
+tasks:
+  - name: Setup Platform
+    init: |
+      echo "Setting up Document Intelligence Platform..."
+      chmod +x setup.sh
+      ./setup.sh
+    command: |
+      echo "Starting services..."
+      ./start.sh
+
+vscode:
+  extensions:
+    - ms-vscode.vscode-json
+    - ms-python.python
+    - ms-vscode.vscode-yaml
