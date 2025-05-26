@@ -1,0 +1,12 @@
+FROM node:18-alpine
+WORKDIR /app
+
+RUN apk add --no-cache python3 py3-pip poppler-utils tesseract-ocr
+
+COPY package.json .
+RUN npm install
+
+COPY organizer/organizer.js .
+
+EXPOSE 3000
+CMD ["node", "organizer.js"]
